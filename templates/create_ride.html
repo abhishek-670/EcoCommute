@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Create a Ride</h4>
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="from_location">From</label>
+                            <input type="text" class="form-control" id="from_location" name="from_location" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="to_location">To</label>
+                            <input type="text" class="form-control" id="to_location" name="to_location" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ride_date">Date</label>
+                            <input type="date" class="form-control" id="ride_date" name="ride_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ride_time">Time</label>
+                            <input type="time" class="form-control" id="ride_time" name="ride_time" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="vehicle_type">Vehicle</label>
+                            <select class="form-select" id="vehicle_type" name="vehicle_type">
+                                <option value="car_petrol">Car (petrol)</option>
+                                <option value="bike">Bike</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="distance_km">Distance (km)</label>
+                            <input type="number" min="0" step="0.1" class="form-control" id="distance_km" name="distance_km" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="total_seats">Total seats</label>
+                            <input type="number" min="1" class="form-control" id="total_seats" name="total_seats" required>
+                            <div class="form-text">Includes driver seat.</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Save Ride</button>
+                </form>
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>CO₂ factors:</strong> Car (petrol) 120 g/km, Bike 0 g/km. Savings = solo - shared per passenger.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

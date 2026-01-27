@@ -1,0 +1,15 @@
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.hero {
+    background: linear-gradient(135deg, #2e7d32, #43a047);
+    color: white;
+    border-radius: 14px;
+}
+
+.badge-eco {
+    background-color: #ffc107;
+    color: #1b5e20;
+    font-weight: 600;
+}

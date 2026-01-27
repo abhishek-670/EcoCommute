@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Available Rides</h4>
+    <a class="btn btn-success" href="{{ url_for('create_ride') }}">Create Ride</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if rides %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Vehicle</th>
+                        <th>Distance (km)</th>
+                        <th>Seats</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for ride in rides %}
+                        <tr>
+                            <td>{{ ride.from_location }} → {{ ride.to_location }}</td>
+                            <td>{{ ride.ride_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ ride.ride_time.strftime('%H:%M') }}</td>
+                            <td>{{ 'Car (petrol)' if ride.vehicle_type == 'car_petrol' else 'Bike' }}</td>
+                            <td>{{ ride.distance_km }}</td>
+                            <td>{{ ride.seats_available }} / {{ ride.total_seats }}</td>
+                            <td class="text-end">
+                                {% if ride.creator_id == g.user.id %}
+                                    <span class="text-muted">Your ride</span>
+                                {% elif ride.id in joined_ids %}
+                                    <span class="text-success fw-semibold">Joined</span>
+                                {% elif ride.seats_available <= 0 %}
+                                    <span class="text-danger">Full</span>
+                                {% else %}
+                                    <form method="POST" action="{{ url_for('join_ride', ride_id=ride.id) }}">
+                                        <button class="btn btn-sm btn-outline-success" type="submit">Join</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="mb-0 text-muted">No rides available yet. Create one!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

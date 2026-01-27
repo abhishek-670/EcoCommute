@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero p-4 mb-4 shadow-sm">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h3 class="mb-1">Hi {{ g.user.email }}</h3>
+            <p class="mb-0">Track your carpools and see how much CO₂ you save.</p>
+        </div>
+        <div class="text-end">
+            <div class="fs-2 fw-bold">{{ total_saved|round(2) }} kg</div>
+            <div class="small">Total CO₂ saved</div>
+            {% if badge_earned %}
+                <span class="badge badge-eco mt-2">Eco Badge Unlocked</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Your Rides</h5>
+                    <a class="btn btn-sm btn-success" href="{{ url_for('create_ride') }}">Create Ride</a>
+                </div>
+                {% if created_rides %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Seats</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ride in created_rides %}
+                                <tr>
+                                    <td>{{ ride.from_location }} → {{ ride.to_location }}</td>
+                                    <td>{{ ride.ride_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ ride.ride_time.strftime('%H:%M') }}</td>
+                                    <td>{{ ride.seats_available }} / {{ ride.total_seats }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No rides created yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Joined Rides</h5>
+                {% if joined_rides %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Driver</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ride in joined_rides %}
+                                <tr>
+                                    <td>{{ ride.from_location }} → {{ ride.to_location }}</td>
+                                    <td>{{ ride.ride_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ ride.ride_time.strftime('%H:%M') }}</td>
+                                    <td>{{ ride.creator.email }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No joined rides yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h5 class="card-title">CO₂ Impact per Ride</h5>
+        {% if ride_summaries %}
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Route</th>
+                        <th>Vehicle</th>
+                        <th>Solo (kg)</th>
+                        <th>Shared (kg)</th>
+                        <th>Saved (kg)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in ride_summaries %}
+                        <tr>
+                            <td>{{ item.role }}</td>
+                            <td>{{ item.ride.from_location }} → {{ item.ride.to_location }}</td>
+                            <td>{{ 'Car (petrol)' if item.ride.vehicle_type == 'car_petrol' else 'Bike' }}</td>
+                            <td>{{ item.solo|round(2) }}</td>
+                            <td>{{ item.shared|round(2) }}</td>
+                            <td class="text-success fw-semibold">{{ item.saved|round(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">Take or create a ride to see savings.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RideShare – Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:#f4f6f5;font-family:Inter,system-ui,sans-serif}
+    .sidebar{height:100vh;background:#ffffff;padding:20px;border-right:1px solid #e5e5e5;position:fixed;width:260px;top:0;left:0}
+    .sidebar .logo{font-size:28px;font-weight:700;color:#00A86B;text-align:center;margin-bottom:30px}
+    .sidebar .nav-link{padding:10px 15px;border-radius:8px;color:#333;font-weight:500}
+    .sidebar .nav-link.active,.sidebar .nav-link:hover{background:#00A86B;color:#fff}
+    .main-content{margin-left:280px;padding:30px}
+    .card-stat{border-left:5px solid #00A86B}
+    .ride-card{border-radius:12px;border:1px solid #e5e5e5;padding:15px;margin-bottom:12px;background:#fff}
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">RideShare</div>
+    <nav class="nav flex-column">
+      <a class="nav-link active" href="#">Dashboard</a>
+      <a class="nav-link" href="#">Find Ride</a>
+      <a class="nav-link" href="#">Create Ride</a>
+      <a class="nav-link" href="#">My Rides</a>
+      <a class="nav-link" href="#">Badges</a>
+      <a class="nav-link" href="#">Leaderboard</a>
+      <hr>
+      <a class="nav-link text-danger" href="#">Logout</a>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h2 class="mb-4">Welcome, Adarsh 👋</h2>
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card card-stat p-3 shadow-sm">
+          <h4>120</h4>
+          <p class="text-muted m-0">Points Earned</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-stat p-3 shadow-sm">
+          <h4>45 kg</h4>
+          <p class="text-muted m-0">CO₂ Saved</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-stat p-3 shadow-sm">
+          <h4>12</h4>
+          <p class="text-muted m-0">Shared Rides</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPCOMING RIDES -->
+    <h4 class="mb-3">Upcoming Rides</h4>
+    <div class="ride-card shadow-sm">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h6 class="m-0">Ride with Priya</h6>
+          <small class="text-muted">28 Nov 2025 • 8:00 AM</small>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-success">Confirmed</span>
+        </div>
+      </div>
+    </div>
+    <div class="ride-card shadow-sm">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h6 class="m-0">Ride with Rohit</h6>
+          <small class="text-muted">28 Nov 2025 • 9:30 AM</small>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-warning text-dark">Pending</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <h4 class="mt-4 mb-3">Recent Activity</h4>
+    <div class="card p-3 shadow-sm mb-3">
+      <strong>You earned +10 points</strong>
+      <p class="text-muted m-0">Shared a ride yesterday • Saved 3.2kg CO₂</p>
+    </div>
+    <div class="card p-3 shadow-sm">
+      <strong>New badge unlocked: First Shared Ride 🏅</strong>
+      <p class="text-muted m-0">Congratulations!</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

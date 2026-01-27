@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RideShare – Create Ride</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:#f4f6f5;font-family:Inter,system-ui,sans-serif}
+    .sidebar{height:100vh;background:#ffffff;padding:20px;border-right:1px solid #e5e5e5;position:fixed;width:260px;top:0;left:0}
+    .sidebar .logo{font-size:28px;font-weight:700;color:#00A86B;text-align:center;margin-bottom:30px}
+    .sidebar .nav-link{padding:10px 15px;border-radius:8px;color:#333;font-weight:500}
+    .sidebar .nav-link.active,.sidebar .nav-link:hover{background:#00A86B;color:#fff}
+    .main-content{margin-left:280px;padding:30px}
+    #map{height:350px;border-radius:12px;margin-top:10px}
+    .form-section{background:#fff;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.08)}
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">RideShare</div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="#">Dashboard</a>
+      <a class="nav-link" href="#">Find Ride</a>
+      <a class="nav-link active" href="#">Create Ride</a>
+      <a class="nav-link" href="#">My Rides</a>
+      <a class="nav-link" href="#">Badges</a>
+      <a class="nav-link" href="#">Leaderboard</a>
+      <hr>
+      <a class="nav-link text-danger" href="#">Logout</a>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h2 class="mb-4">Create a New Ride</h2>
+
+    <!-- FORM SECTION -->
+    <div class="form-section mb-4">
+      <form class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Origin Location</label>
+          <input type="text" class="form-control" placeholder="Enter pickup location" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Destination Location</label>
+          <input type="text" class="form-control" placeholder="Enter drop location" required>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Date & Time</label>
+          <input type="datetime-local" class="form-control" required>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Seats</label>
+          <input type="number" class="form-control" min="1" value="3" required>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Vehicle Type</label>
+          <select class="form-select">
+            <option value="0.192">Small Car (192 g/km)</option>
+            <option value="0.223">Medium Car (223 g/km)</option>
+            <option value="0.27">SUV (270 g/km)</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-success w-100" type="submit">Create Ride</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- MAP SECTION -->
+    <h4>Pick Locations on Map</h4>
+    <div id="map" class="shadow-sm"></div>
+
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([12.9716, 77.5946], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    let marker;
+
+    map.on('click', function(e){
+      if(marker) map.removeLayer(marker);
+      marker = L.marker(e.latlng).addTo(map);
+    });
+  </script>
+
+</body>
+</html>
