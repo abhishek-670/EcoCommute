@@ -1,0 +1,131 @@
+{% extends "rides/base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Ride Information Card -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
+        <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Join Ride
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            <!-- Ride Details -->
+            <div class="bg-gray-50 rounded-xl p-5 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ride Details</h3>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                        <span class="font-medium">Route:</span>
+                        <span class="ml-2">{{ ride.from_location }} → {{ ride.to_location }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="font-medium">Date:</span>
+                        <span class="ml-2">{{ ride.ride_date }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="font-medium">Time:</span>
+                        <span class="ml-2">{{ ride.ride_time|time:"H:i" }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                            <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                        </svg>
+                        <span class="font-medium">Vehicle:</span>
+                        <span class="ml-2">{% if ride.vehicle_type == 'car_petrol' %}Car (petrol){% else %}Bike{% endif %}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span class="font-medium">Available Seats:</span>
+                        <span class="ml-2">{{ ride.seats_available }}/{{ ride.total_seats }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-700">
+                        <svg class="w-5 h-5 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <span class="font-medium">Driver:</span>
+                        <span class="ml-2">{{ ride.creator.email }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pickup Point Form -->
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="pickup_point" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Pickup Point <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           id="pickup_point" 
+                           name="pickup_point" 
+                           required
+                           placeholder="Enter your pickup location (e.g., Main Street Corner, Metro Station)"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                    <p class="mt-2 text-sm text-gray-500">Where should the driver pick you up?</p>
+                </div>
+
+                <div>
+                    <label for="pickup_notes" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Pickup Notes (Optional)
+                    </label>
+                    <textarea id="pickup_notes" 
+                              name="pickup_notes" 
+                              rows="3"
+                              placeholder="Add any landmarks, timing preferences, or special instructions"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"></textarea>
+                    <p class="mt-2 text-sm text-gray-500">E.g., "Near the coffee shop", "I'll be ready by 8:00 AM", etc.</p>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Confirm Join Ride
+                    </button>
+                    <a href="{% url 'rides_list' %}" 
+                       class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-all text-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+        <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <p class="text-sm text-blue-800 font-medium">Important</p>
+                <p class="text-sm text-blue-700 mt-1">Please provide an accurate pickup point so the driver can easily find you. You'll be able to see ride details and contact information after joining.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

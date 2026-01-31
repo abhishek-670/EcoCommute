@@ -1,0 +1,312 @@
+{% extends 'rides/admin/base.html' %}
+
+{% block title %}Ride Details{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-car-front"></i> Ride Details #{{ ride.id }}</h2>
+            <p class="mb-0">Detailed information about this ride</p>
+        </div>
+        <a href="{% url 'admin_rides_list' %}" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Ride Information -->
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Ride Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">Status:</th>
+                        <td>
+                            {% if ride.ride_status == 'created' %}
+                                <span class="badge bg-info badge-status">
+                                    <i class="bi bi-clock"></i> Created
+                                </span>
+                            {% elif ride.ride_status == 'started' %}
+                                <span class="badge bg-warning badge-status">
+                                    <i class="bi bi-play-circle"></i> Started
+                                </span>
+                            {% elif ride.ride_status == 'completed' %}
+                                <span class="badge bg-success badge-status">
+                                    <i class="bi bi-check-circle"></i> Completed
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>From:</th>
+                        <td><strong>{{ ride.from_location }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>To:</th>
+                        <td><strong>{{ ride.to_location }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Distance:</th>
+                        <td>{{ ride.distance_km }} km</td>
+                    </tr>
+                    <tr>
+                        <th>Date:</th>
+                        <td>{{ ride.ride_date|date:"l, F d, Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Time:</th>
+                        <td>{{ ride.ride_time|time:"h:i A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Vehicle Type:</th>
+                        <td>{{ ride.get_vehicle_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Vehicle Number:</th>
+                        <td><span class="badge bg-secondary">{{ ride.vehicle_number }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Total Seats:</th>
+                        <td>{{ ride.total_seats }}</td>
+                    </tr>
+                    <tr>
+                        <th>Available Seats:</th>
+                        <td><span class="badge bg-info">{{ ride.seats_available }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Created At:</th>
+                        <td>{{ ride.created_at|date:"M d, Y h:i A" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Driver Information -->
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Driver Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">Email:</th>
+                        <td>{{ ride.creator.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Name:</th>
+                        <td>
+                            {% if ride.creator.first_name or ride.creator.last_name %}
+                                {{ ride.creator.first_name }} {{ ride.creator.last_name }}
+                            {% else %}
+                                <span class="text-muted">Not provided</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Phone:</th>
+                        <td>
+                            {% if ride.creator.profile.phone_number %}
+                                +{{ ride.creator.profile.phone_number }}
+                            {% else %}
+                                <span class="text-muted">Not provided</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Aadhaar Status:</th>
+                        <td>
+                            {% if ride.creator.profile.aadhaar_verified %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Verified
+                                </span>
+                                {% if ride.creator.profile.aadhaar_masked %}
+                                    <br><small>{{ ride.creator.profile.aadhaar_masked }}</small>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-warning">Not Verified</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Account Status:</th>
+                        <td>
+                            {% if ride.creator.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-check2-square"></i> Two-Side Confirmation Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Ride Start Confirmations:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Driver Confirmed Start
+                                {% if ride.driver_started %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i> Yes
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle"></i> No
+                                    </span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Passenger Confirmed Start
+                                {% if ride.passenger_started %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i> Yes
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle"></i> No
+                                    </span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Ride End Confirmations:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Driver Confirmed End
+                                {% if ride.driver_ended %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i> Yes
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle"></i> No
+                                    </span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Passenger Confirmed End
+                                {% if ride.passenger_ended %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i> Yes
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle"></i> No
+                                    </span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Passengers -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Passengers ({{ passengers.count }})</h5>
+    </div>
+    <div class="card-body">
+        {% if passengers %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Pickup Point</th>
+                            <th>Notes</th>
+                            <th>Joined At</th>
+                            <th>Aadhaar Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for passenger in passengers %}
+                        <tr>
+                            <td>{{ passenger.user.email }}</td>
+                            <td>
+                                {% if passenger.user.profile.phone_number %}
+                                    +{{ passenger.user.profile.phone_number }}
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if passenger.pickup_point %}
+                                    {{ passenger.pickup_point }}
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if passenger.pickup_notes %}
+                                    <small>{{ passenger.pickup_notes|truncatechars:50 }}</small>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ passenger.joined_at|date:"M d, Y h:i A" }}</td>
+                            <td>
+                                {% if passenger.user.profile.aadhaar_verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Not Verified</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted text-center mb-0">No passengers have joined this ride yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h6>Admin Actions:</h6>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_rides_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Rides List
+            </a>
+            {% if ride.ride_status != 'completed' %}
+                <form method="post" action="{% url 'admin_cancel_ride' ride.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this ride? This action cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Cancel This Ride
+                    </button>
+                </form>
+            {% else %}
+                <button type="button" class="btn btn-secondary" disabled>
+                    <i class="bi bi-lock"></i> Ride Completed (Cannot Cancel)
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

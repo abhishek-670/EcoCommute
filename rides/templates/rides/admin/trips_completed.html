@@ -1,0 +1,211 @@
+{% extends 'rides/admin/base.html' %}
+
+{% block title %}Completed Trips{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container-fluid">
+        <h2><i class="bi bi-check-circle"></i> Completed Trips</h2>
+        <p class="mb-0">Historical record of completed rides (read-only)</p>
+    </div>
+</div>
+
+<!-- Summary -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Completed Rides</h6>
+                        <h2 class="mb-0">{{ rides.count }}</h2>
+                    </div>
+                    <div class="text-success">
+                        <i class="bi bi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Completed Rides Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Completed Rides</h5>
+        <span class="badge bg-success">Read-Only</span>
+    </div>
+    <div class="card-body p-0">
+        {% if rides %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Route</th>
+                            <th>Date & Time</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                            <th>Passengers</th>
+                            <th>Distance</th>
+                            <th>Confirmations</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ride in rides %}
+                        <tr>
+                            <td><strong>#{{ ride.id }}</strong></td>
+                            <td>
+                                <strong>{{ ride.from_location }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-arrow-down"></i> {{ ride.to_location }}
+                                </small>
+                            </td>
+                            <td>
+                                {{ ride.ride_date|date:"M d, Y" }}
+                                <br>
+                                <small class="text-muted">{{ ride.ride_time|time:"h:i A" }}</small>
+                            </td>
+                            <td>
+                                {{ ride.creator.email|truncatechars:25 }}
+                                {% if ride.creator.profile.phone_number %}
+                                    <br><small class="text-muted">+{{ ride.creator.profile.phone_number }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ ride.vehicle_number }}</span>
+                                <br>
+                                <small class="text-muted">{{ ride.get_vehicle_type_display }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ ride.passengers.count }} passenger(s)
+                                </span>
+                                <br>
+                                <small class="text-muted">{{ ride.total_seats }} total seats</small>
+                            </td>
+                            <td>
+                                <strong>{{ ride.distance_km }} km</strong>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <!-- Start Confirmations -->
+                                    <div>
+                                        <small class="text-muted">Start:</small>
+                                        {% if ride.driver_started %}
+                                            <i class="bi bi-check-circle-fill text-success" title="Driver confirmed start"></i>
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-danger" title="Driver did not confirm start"></i>
+                                        {% endif %}
+                                        {% if ride.passenger_started %}
+                                            <i class="bi bi-check-circle-fill text-success" title="Passenger confirmed start"></i>
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-danger" title="Passenger did not confirm start"></i>
+                                        {% endif %}
+                                    </div>
+                                    <!-- End Confirmations -->
+                                    <div>
+                                        <small class="text-muted">End:</small>
+                                        {% if ride.driver_ended %}
+                                            <i class="bi bi-check-circle-fill text-success" title="Driver confirmed end"></i>
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-danger" title="Driver did not confirm end"></i>
+                                        {% endif %}
+                                        {% if ride.passenger_ended %}
+                                            <i class="bi bi-check-circle-fill text-success" title="Passenger confirmed end"></i>
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-danger" title="Passenger did not confirm end"></i>
+                                        {% endif %}
+                                    </div>
+                                    <!-- Status Badge -->
+                                    {% if ride.driver_started and ride.passenger_started and ride.driver_ended and ride.passenger_ended %}
+                                        <span class="badge bg-success" style="font-size: 0.7rem;">Fully Confirmed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning" style="font-size: 0.7rem;">Partial Confirmation</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center table-actions">
+                                <a href="{% url 'admin_ride_detail' ride.id %}" class="btn btn-sm btn-info" title="View Details">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <p class="text-muted mt-3">No completed trips yet.</p>
+                <a href="{% url 'admin_rides_list' %}" class="btn btn-sm btn-outline-primary">View All Rides</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Info Box -->
+<div class="alert alert-info mt-4">
+    <i class="bi bi-info-circle"></i> 
+    <strong>Note:</strong> This is a read-only view of completed trips. Completed rides cannot be modified or cancelled. The confirmation status shows whether both driver and passengers confirmed the ride start and end.
+</div>
+
+<!-- Statistics (Optional) -->
+{% if rides %}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Fully Confirmed</h6>
+                <h3 class="text-success">
+                    {% with fully_confirmed=0 %}
+                        {% for ride in rides %}
+                            {% if ride.driver_started and ride.passenger_started and ride.driver_ended and ride.passenger_ended %}
+                                {% with fully_confirmed=fully_confirmed|add:1 %}{% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ fully_confirmed }}
+                    {% endwith %}
+                </h3>
+                <small class="text-muted">All confirmations received</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Total Distance</h6>
+                <h3 class="text-primary">
+                    {% with total_distance=0 %}
+                        {% for ride in rides %}
+                            {% with total_distance=total_distance|add:ride.distance_km %}{% endwith %}
+                        {% endfor %}
+                        {{ total_distance }} km
+                    {% endwith %}
+                </h3>
+                <small class="text-muted">Across all completed rides</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Total Passengers</h6>
+                <h3 class="text-info">
+                    {% with total_passengers=0 %}
+                        {% for ride in rides %}
+                            {% with total_passengers=total_passengers|add:ride.passengers.count %}{% endwith %}
+                        {% endfor %}
+                        {{ total_passengers }}
+                    {% endwith %}
+                </h3>
+                <small class="text-muted">Served successfully</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

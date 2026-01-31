@@ -1,0 +1,241 @@
+{% extends 'rides/base.html' %}
+
+{% block title %}Share Location - EcoCommute{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-green-600 mb-6">Share Your Location</h1>
+        
+        <!-- Ride Information -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-2">Ride Details</h2>
+            <p><strong>From:</strong> {{ ride.from_location }}</p>
+            <p><strong>To:</strong> {{ ride.to_location }}</p>
+            <p><strong>Date:</strong> {{ ride.ride_date }} at {{ ride.ride_time }}</p>
+            <p><strong>Driver:</strong> {{ ride.creator.email }}</p>
+        </div>
+
+        <!-- Privacy Notice -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Privacy & Consent</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Your location will only be visible to the ride creator</li>
+                            <li>Location updates every 3-5 seconds while sharing is active</li>
+                            <li>No location history is stored - only your current position</li>
+                            <li>You can stop sharing at any time</li>
+                            <li>Location data is automatically deleted when the ride ends</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Sharing Controls -->
+        <div class="space-y-4">
+            <div id="status-display" class="hidden">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="font-semibold text-green-800">Status: <span id="sharing-status">Inactive</span></p>
+                    <p class="text-sm text-gray-600 mt-2">Last updated: <span id="last-update">Never</span></p>
+                    <p class="text-sm text-gray-600">Coordinates: <span id="current-coords">N/A</span></p>
+                </div>
+            </div>
+
+            <div id="error-display" class="hidden">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-800" id="error-message"></p>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="flex gap-4">
+                <button id="start-sharing-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Start Sharing Location
+                </button>
+
+                <button id="stop-sharing-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 hidden">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Stop Sharing
+                </button>
+            </div>
+
+            <a href="{% url 'ride_detail' ride.id %}" class="block text-center bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
+                Back to Ride Details
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Location tracking variables
+let watchId = null;
+let isSharing = false;
+let updateInterval = null;
+const RIDE_ID = {{ ride.id }};
+
+// Get CSRF token for POST requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Update location on server
+function updateLocationOnServer(latitude, longitude) {
+    const formData = new FormData();
+    formData.append('ride_id', RIDE_ID);
+    formData.append('latitude', latitude);
+    formData.append('longitude', longitude);
+    formData.append('is_sharing', 'true');
+
+    fetch('{% url "update_location" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            document.getElementById('current-coords').textContent = 
+                `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+        } else {
+            showError(data.error || 'Failed to update location');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating location:', error);
+    });
+}
+
+// Start location sharing
+function startSharing() {
+    if (!navigator.geolocation) {
+        showError('Geolocation is not supported by your browser');
+        return;
+    }
+
+    // Request permission and start watching position
+    watchId = navigator.geolocation.watchPosition(
+        // Success callback
+        (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            
+            // Update UI
+            isSharing = true;
+            document.getElementById('sharing-status').textContent = 'Active 🟢';
+            document.getElementById('status-display').classList.remove('hidden');
+            document.getElementById('start-sharing-btn').classList.add('hidden');
+            document.getElementById('stop-sharing-btn').classList.remove('hidden');
+            
+            // Send to server
+            updateLocationOnServer(latitude, longitude);
+        },
+        // Error callback
+        (error) => {
+            let errorMsg = 'Unable to retrieve your location';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg = 'Location permission denied. Please enable location access in your browser.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg = 'Location information is unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    errorMsg = 'Location request timed out.';
+                    break;
+            }
+            showError(errorMsg);
+            stopSharing();
+        },
+        // Options
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Stop location sharing
+function stopSharing() {
+    if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
+    isSharing = false;
+    document.getElementById('sharing-status').textContent = 'Inactive 🔴';
+    document.getElementById('start-sharing-btn').classList.remove('hidden');
+    document.getElementById('stop-sharing-btn').classList.add('hidden');
+
+    // Notify server to stop sharing
+    fetch('{% url "stop_location_sharing" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Location sharing stopped on server');
+    })
+    .catch(error => {
+        console.error('Error stopping location sharing:', error);
+    });
+}
+
+// Show error message
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    document.getElementById('error-display').classList.remove('hidden');
+    setTimeout(() => {
+        document.getElementById('error-display').classList.add('hidden');
+    }, 5000);
+}
+
+// Event listeners
+document.getElementById('start-sharing-btn').addEventListener('click', startSharing);
+document.getElementById('stop-sharing-btn').addEventListener('click', stopSharing);
+
+// Auto-start if previously sharing
+{% if is_currently_sharing %}
+    startSharing();
+{% endif %}
+
+// Clean up when page is closed
+window.addEventListener('beforeunload', () => {
+    if (isSharing) {
+        stopSharing();
+    }
+});
+</script>
+{% endblock %}

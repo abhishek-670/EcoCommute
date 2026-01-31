@@ -1,0 +1,323 @@
+{% extends 'rides/base.html' %}
+
+{% block title %}Track Ride - EcoCommute{% endblock %}
+
+{% block head %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+    crossorigin=""/>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+    crossorigin=""></script>
+
+<style>
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .passenger-card {
+        transition: all 0.3s ease;
+    }
+    .passenger-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .status-active {
+        background-color: #10b981;
+        box-shadow: 0 0 8px #10b981;
+    }
+    .status-inactive {
+        background-color: #ef4444;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-bold text-green-600">Live Ride Tracking</h1>
+            <a href="{% url 'ride_detail' ride.id %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
+                Back to Ride
+            </a>
+        </div>
+
+        <!-- Ride Information -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+            <h2 class="text-xl font-semibold mb-2">Ride Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p><strong>From:</strong> {{ ride.from_location }}</p>
+                    <p><strong>To:</strong> {{ ride.to_location }}</p>
+                </div>
+                <div>
+                    <p><strong>Date:</strong> {{ ride.ride_date }}</p>
+                    <p><strong>Time:</strong> {{ ride.ride_time }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passengers List -->
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold mb-3">Passengers ({{ passengers.count }})</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="passengers-list">
+                {% for passenger in passengers %}
+                <div class="passenger-card bg-white border border-gray-200 rounded-lg p-4" data-user-id="{{ passenger.user.id }}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-semibold">{{ passenger.user.email }}</p>
+                            <p class="text-sm text-gray-600">
+                                <span class="status-indicator status-inactive" id="status-{{ passenger.user.id }}"></span>
+                                <span id="status-text-{{ passenger.user.id }}">Not Sharing</span>
+                            </p>
+                        </div>
+                        <button 
+                            onclick="centerOnPassenger({{ passenger.user.id }})" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition duration-200"
+                            id="center-btn-{{ passenger.user.id }}"
+                            style="display: none;">
+                            Locate
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2" id="last-update-{{ passenger.user.id }}">No location data</p>
+                </div>
+                {% empty %}
+                <div class="col-span-full">
+                    <p class="text-gray-500 text-center py-4">No passengers have joined this ride yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-semibold">Live Location Map</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-sm">
+                    <span class="status-indicator status-active"></span>
+                    <span>Sharing Location</span>
+                </div>
+                <div class="text-sm">
+                    <span class="status-indicator status-inactive"></span>
+                    <span>Not Sharing</span>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+        <p class="text-sm text-gray-600 mt-3">
+            <strong>Note:</strong> Map updates automatically every 4 seconds. Only passengers who have started sharing their location will appear on the map.
+        </p>
+    </div>
+</div>
+
+<script>
+// Initialize map
+const map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India center
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+}).addTo(map);
+
+// Store markers for each passenger
+const passengerMarkers = {};
+const passengerData = {};
+
+// Define colors for different passengers
+const markerColors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'violet', 'grey', 'black'];
+
+// Custom marker icon function
+function createCustomIcon(color, label) {
+    return L.divIcon({
+        className: 'custom-marker',
+        html: `
+            <div style="
+                background-color: ${color};
+                width: 30px;
+                height: 30px;
+                border-radius: 50% 50% 50% 0;
+                transform: rotate(-45deg);
+                border: 3px solid white;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <span style="
+                    transform: rotate(45deg);
+                    color: white;
+                    font-weight: bold;
+                    font-size: 12px;
+                ">${label}</span>
+            </div>
+        `,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -30]
+    });
+}
+
+// Passenger list from Django
+const passengers = [
+    {% for passenger in passengers %}
+    {
+        id: {{ passenger.user.id }},
+        email: "{{ passenger.user.email }}",
+        color: markerColors[{{ forloop.counter0 }} % markerColors.length]
+    },
+    {% endfor %}
+];
+
+// Fetch location for a specific passenger
+function fetchPassengerLocation(passengerId) {
+    fetch(`/location/get/${passengerId}/{{ ride.id }}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updatePassengerLocation(data);
+            } else {
+                // Location not available - mark as not sharing
+                markPassengerInactive(passengerId);
+            }
+        })
+        .catch(error => {
+            console.error(`Error fetching location for passenger ${passengerId}:`, error);
+            markPassengerInactive(passengerId);
+        });
+}
+
+// Update passenger location on map
+function updatePassengerLocation(data) {
+    const passengerId = data.user_id;
+    const passenger = passengers.find(p => p.id === passengerId);
+    
+    if (!passenger) return;
+
+    const latLng = [data.latitude, data.longitude];
+    
+    // Update marker
+    if (passengerMarkers[passengerId]) {
+        // Move existing marker
+        passengerMarkers[passengerId].setLatLng(latLng);
+    } else {
+        // Create new marker
+        const label = passenger.email.substring(0, 1).toUpperCase();
+        const icon = createCustomIcon(passenger.color, label);
+        
+        const marker = L.marker(latLng, { icon: icon }).addTo(map);
+        marker.bindPopup(`
+            <strong>${passenger.email}</strong><br>
+            Lat: ${data.latitude.toFixed(6)}<br>
+            Lng: ${data.longitude.toFixed(6)}<br>
+            <small>Updated: ${new Date(data.updated_at).toLocaleTimeString()}</small>
+        `);
+        
+        passengerMarkers[passengerId] = marker;
+        
+        // Auto-zoom to fit all markers if this is the first marker
+        if (Object.keys(passengerMarkers).length === 1) {
+            map.setView(latLng, 13);
+        }
+    }
+
+    // Update UI
+    const statusIndicator = document.getElementById(`status-${passengerId}`);
+    const statusText = document.getElementById(`status-text-${passengerId}`);
+    const lastUpdate = document.getElementById(`last-update-${passengerId}`);
+    const centerBtn = document.getElementById(`center-btn-${passengerId}`);
+    
+    if (statusIndicator) {
+        statusIndicator.classList.remove('status-inactive');
+        statusIndicator.classList.add('status-active');
+    }
+    
+    if (statusText) {
+        statusText.textContent = 'Sharing Location';
+    }
+    
+    if (lastUpdate) {
+        lastUpdate.textContent = `Updated: ${new Date(data.updated_at).toLocaleTimeString()}`;
+    }
+    
+    if (centerBtn) {
+        centerBtn.style.display = 'block';
+    }
+    
+    // Store data
+    passengerData[passengerId] = data;
+}
+
+// Mark passenger as inactive
+function markPassengerInactive(passengerId) {
+    const statusIndicator = document.getElementById(`status-${passengerId}`);
+    const statusText = document.getElementById(`status-text-${passengerId}`);
+    const centerBtn = document.getElementById(`center-btn-${passengerId}`);
+    
+    if (statusIndicator) {
+        statusIndicator.classList.remove('status-active');
+        statusIndicator.classList.add('status-inactive');
+    }
+    
+    if (statusText) {
+        statusText.textContent = 'Not Sharing';
+    }
+    
+    if (centerBtn) {
+        centerBtn.style.display = 'none';
+    }
+}
+
+// Center map on specific passenger
+function centerOnPassenger(passengerId) {
+    if (passengerMarkers[passengerId]) {
+        const marker = passengerMarkers[passengerId];
+        map.setView(marker.getLatLng(), 15);
+        marker.openPopup();
+    }
+}
+
+// Fetch all passenger locations
+function fetchAllLocations() {
+    passengers.forEach(passenger => {
+        fetchPassengerLocation(passenger.id);
+    });
+}
+
+// Initial fetch
+fetchAllLocations();
+
+// Poll for updates every 4 seconds
+setInterval(fetchAllLocations, 4000);
+
+// Fit map to show all markers
+function fitMapToMarkers() {
+    const markerLatLngs = Object.values(passengerMarkers).map(marker => marker.getLatLng());
+    if (markerLatLngs.length > 0) {
+        const bounds = L.latLngBounds(markerLatLngs);
+        map.fitBounds(bounds, { padding: [50, 50] });
+    }
+}
+
+// Auto-fit map every 20 seconds if multiple markers exist
+setInterval(() => {
+    if (Object.keys(passengerMarkers).length > 1) {
+        fitMapToMarkers();
+    }
+}, 20000);
+</script>
+{% endblock %}

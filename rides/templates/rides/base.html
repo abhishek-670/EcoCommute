@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}EcoCommute - Sustainable Carpooling{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        secondary: '#059669',
+                    }
+                }
+            }
+        }
+    </script>
+    {% block head %}{% endblock %}
+</head>
+<body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}" class="flex items-center space-x-2">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">EcoCommute</span>
+                    </a>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="{% url 'dashboard' %}" class="px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors font-medium">Dashboard</a>
+                    <a href="{% url 'rides_list' %}" class="px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors font-medium">Browse Rides</a>
+                    <a href="{% url 'create_ride' %}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all font-medium shadow-md">Create Ride</a>
+                    <a href="{% url 'logout' %}" class="px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-medium">Logout</a>
+                </div>
+                {% else %}
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="{% url 'login' %}" class="px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-medium">Login</a>
+                    <a href="{% url 'register' %}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all font-medium shadow-md">Get Started</a>
+                </div>
+                {% endif %}
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-primary">Dashboard</a>
+                <a href="{% url 'rides_list' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-primary">Browse Rides</a>
+                <a href="{% url 'create_ride' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-primary">Create Ride</a>
+                <a href="{% url 'logout' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Login</a>
+                <a href="{% url 'register' %}" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if messages %}
+        <div class="mb-6 space-y-3">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-50 border-l-4 border-green-500 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-l-4 border-red-500 text-red-800{% elif message.tags == 'warning' %}bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800{% else %}bg-blue-50 border-l-4 border-blue-500 text-blue-800{% endif %} p-4 rounded-r-lg shadow-sm animate-fade-in">
+                <div class="flex items-center justify-between">
+                    <p class="font-medium">{{ message }}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-gray-600">
+                <p class="text-sm">🌱 EcoCommute - Together we reduce carbon emissions, one ride at a time.</p>
+                <p class="text-xs mt-2 text-gray-500">© 2026 EcoCommute. Sustainable Transportation Platform.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

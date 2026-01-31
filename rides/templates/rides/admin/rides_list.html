@@ -1,0 +1,175 @@
+{% extends 'rides/admin/base.html' %}
+
+{% block title %}Ride Management{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container-fluid">
+        <h2><i class="bi bi-car-front"></i> Ride Management</h2>
+        <p class="mb-0">Manage all rides on the platform</p>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Search by location, vehicle number, or driver email..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Status Filter</label>
+                <select name="status" class="form-select">
+                    <option value="">All Rides</option>
+                    <option value="created" {% if status_filter == 'created' %}selected{% endif %}>Created</option>
+                    <option value="started" {% if status_filter == 'started' %}selected{% endif %}>Started</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Rides Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">All Rides ({{ rides.count }})</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if rides %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Route</th>
+                            <th>Date & Time</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                            <th>Seats</th>
+                            <th>Status</th>
+                            <th>Confirmations</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ride in rides %}
+                        <tr>
+                            <td><strong>#{{ ride.id }}</strong></td>
+                            <td>
+                                <strong>{{ ride.from_location }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-arrow-down"></i> {{ ride.to_location }}
+                                </small>
+                                <br>
+                                <small class="text-muted">{{ ride.distance_km }} km</small>
+                            </td>
+                            <td>
+                                {{ ride.ride_date|date:"M d, Y" }}
+                                <br>
+                                <small class="text-muted">{{ ride.ride_time|time:"h:i A" }}</small>
+                            </td>
+                            <td>
+                                {{ ride.creator.email|truncatechars:25 }}
+                                {% if ride.creator.profile.phone_number %}
+                                    <br><small class="text-muted">+{{ ride.creator.profile.phone_number }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ ride.vehicle_number }}</span>
+                                <br>
+                                <small class="text-muted">{{ ride.get_vehicle_type_display }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ ride.seats_available }}/{{ ride.total_seats }}
+                                </span>
+                                <br>
+                                <small class="text-muted">{{ ride.passengers.count }} passenger(s)</small>
+                            </td>
+                            <td>
+                                {% if ride.ride_status == 'created' %}
+                                    <span class="badge bg-info badge-status">
+                                        <i class="bi bi-clock"></i> Created
+                                    </span>
+                                {% elif ride.ride_status == 'started' %}
+                                    <span class="badge bg-warning badge-status">
+                                        <i class="bi bi-play-circle"></i> Started
+                                    </span>
+                                {% elif ride.ride_status == 'completed' %}
+                                    <span class="badge bg-success badge-status">
+                                        <i class="bi bi-check-circle"></i> Completed
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    <strong>Start:</strong>
+                                    {% if ride.driver_started %}
+                                        <i class="bi bi-check-circle-fill text-success"></i> Driver
+                                    {% else %}
+                                        <i class="bi bi-circle text-muted"></i> Driver
+                                    {% endif %}
+                                    {% if ride.passenger_started %}
+                                        <i class="bi bi-check-circle-fill text-success"></i> Passenger
+                                    {% else %}
+                                        <i class="bi bi-circle text-muted"></i> Passenger
+                                    {% endif %}
+                                    <br>
+                                    <strong>End:</strong>
+                                    {% if ride.driver_ended %}
+                                        <i class="bi bi-check-circle-fill text-success"></i> Driver
+                                    {% else %}
+                                        <i class="bi bi-circle text-muted"></i> Driver
+                                    {% endif %}
+                                    {% if ride.passenger_ended %}
+                                        <i class="bi bi-check-circle-fill text-success"></i> Passenger
+                                    {% else %}
+                                        <i class="bi bi-circle text-muted"></i> Passenger
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td class="text-center table-actions">
+                                <a href="{% url 'admin_ride_detail' ride.id %}" class="btn btn-sm btn-info" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if ride.ride_status != 'completed' %}
+                                    <form method="post" action="{% url 'admin_cancel_ride' ride.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this ride? This action cannot be undone.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Cancel Ride">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <p class="text-muted mt-3">No rides found.</p>
+                {% if search_query or status_filter %}
+                    <a href="{% url 'admin_rides_list' %}" class="btn btn-sm btn-outline-primary">Clear Filters</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Info Box -->
+<div class="alert alert-warning mt-4">
+    <i class="bi bi-exclamation-triangle"></i> 
+    <strong>Note:</strong> Cancelling a ride will permanently delete it. Completed rides cannot be cancelled.
+</div>
+{% endblock %}

@@ -1,0 +1,374 @@
+{% extends "rides/base.html" %}
+{% block content %}
+
+<!-- Aadhaar Verification Status Banner -->
+{% if not user.profile.aadhaar_verified %}
+<div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg p-6 mb-6 text-white animate-pulse">
+    <div class="flex items-start justify-between">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div class="ml-4 flex-1">
+                <h3 class="text-xl font-bold mb-2">⚠️ Aadhaar Verification Required</h3>
+                <p class="text-orange-100 mb-3">
+                    You need to verify your Aadhaar to create and join rides. This ensures safety and trust for all users.
+                </p>
+                <div class="flex gap-3">
+                    <a href="{% url 'aadhaar_verification_start' %}" class="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-orange-50 transition-all inline-flex items-center shadow-lg">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        Verify Aadhaar Now
+                    </a>
+                    <button onclick="document.getElementById('why-aadhaar').classList.toggle('hidden')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-all">
+                        Why Required?
+                    </button>
+                </div>
+                <div id="why-aadhaar" class="hidden mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <ul class="text-sm text-orange-50 space-y-1">
+                        <li>✓ Ensures identity verification for safety</li>
+                        <li>✓ Builds trust in the community</li>
+                        <li>✓ Complies with government regulations</li>
+                        <li>✓ Your Aadhaar number is never stored (only verification status)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <button onclick="this.closest('.animate-pulse').remove()" class="text-white hover:text-orange-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+</div>
+{% else %}
+<div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 mb-6 text-white">
+    <div class="flex items-center">
+        <svg class="h-6 w-6 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="flex-1">
+            <span class="font-semibold">✓ Aadhaar Verified</span>
+            <span class="text-green-100 ml-2">({{ user.profile.aadhaar_masked }})</span>
+        </div>
+        <span class="text-xs text-green-100">Verified on {{ user.profile.aadhaar_verified_at|date:"M d, Y" }}</span>
+    </div>
+</div>
+{% endif %}
+
+<!-- Enhanced Hero Stats Section with Animation -->
+<div class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-500 rounded-2xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden" style="background-size: 200% 200%; animation: gradient 8s ease infinite;">
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="absolute -top-10 -right-10 opacity-20">
+        <svg class="w-80 h-80" fill="currentColor" viewBox="0 0 20 20" style="animation: pulse 3s ease-in-out infinite;">
+            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/>
+        </svg>
+    </div>
+    <div class="relative z-10">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-extrabold">Welcome back!</h1>
+                        <p class="text-green-100 text-sm md:text-base">{{ user.email|truncatechars:30 }}</p>
+                    </div>
+                </div>
+                <p class="text-green-100 text-lg font-medium">🌱 Track your carpools and see your environmental impact</p>
+            </div>
+            <div class="text-center md:text-right bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-6xl md:text-7xl font-black tracking-tight">{{ total_saved|floatformat:1 }}</span>
+                        <span class="text-3xl font-bold text-green-200">kg</span>
+                    </div>
+                    <div class="text-green-100 font-semibold text-sm uppercase tracking-wide mb-3">CO₂ Saved</div>
+                    {% if badge_earned %}
+                    <div class="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg" style="animation: bounce 2s ease-in-out infinite;">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" style="animation: spin 3s linear infinite;">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        🏆 Eco Champion!
+                    </div>
+                    {% else %}
+                    <div class="text-xs text-green-200">Save 5kg CO₂ to unlock Eco Badge! 🌟</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Bar -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <a href="{% url 'create_ride' %}" class="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-3xl font-bold mb-1">Create Ride</div>
+                <div class="text-blue-100 text-sm">Share your commute</div>
+            </div>
+            <svg class="w-12 h-12 text-blue-200 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+        </div>
+    </a>
+    <a href="{% url 'rides_list' %}" class="group bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-3xl font-bold mb-1">Find Rides</div>
+                <div class="text-purple-100 text-sm">Join a carpool</div>
+            </div>
+            <svg class="w-12 h-12 text-purple-200 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
+    </a>
+    <div class="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-3xl font-bold mb-1">{{ created_rides|length|add:joined_ride_passengers|length }}</div>
+                <div class="text-green-100 text-sm">Total Rides</div>
+            </div>
+            <svg class="w-12 h-12 text-green-200" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Rides Grid -->
+<div class="grid md:grid-cols-2 gap-6 mb-6">
+    <!-- Your Rides Card -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+            <div class="flex justify-between items-center">
+                <h5 class="text-xl font-bold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Your Rides
+                </h5>
+                <a href="{% url 'create_ride' %}" class="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg">
+                    + Create
+                </a>
+            </div>
+        </div>
+        <div class="p-6">
+            {% if created_rides %}
+                <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                    {% for ride in created_rides %}
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:border-blue-300 transition-all duration-200 hover:shadow-md">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center text-gray-800 font-semibold mb-2">
+                                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                        </svg>
+                                        {{ ride.from_location }} → {{ ride.to_location }}
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2 text-sm text-gray-600 mb-2">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            {{ ride.ride_date }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ ride.ride_time|time:"H:i" }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            {{ ride.seats_available }}/{{ ride.total_seats }}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        {{ ride.passengers.count }} passenger(s) joined
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'ride_detail' ride.id %}" 
+                                       class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow hover:shadow-md">
+                                        View
+                                    </a>
+                                    <form method="POST" action="{% url 'delete_ride' ride.id %}" onsubmit="return confirm('Are you sure you want to delete this ride?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow hover:shadow-md">
+                                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p class="text-gray-500">No rides created yet.</p>
+                    <a href="{% url 'create_ride' %}" class="inline-block mt-3 text-blue-600 hover:text-blue-700 font-medium">Create your first ride →</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Joined Rides Card -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+        <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+            <h5 class="text-xl font-bold text-white flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Joined Rides
+            </h5>
+        </div>
+        <div class="p-6">
+            {% if joined_ride_passengers %}
+                <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                    {% for rp in joined_ride_passengers %}
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:border-purple-300 transition-all duration-200 hover:shadow-md">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center text-gray-800 font-semibold mb-2">
+                                        <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                        </svg>
+                                        {{ rp.ride.from_location }} → {{ rp.ride.to_location }}
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-2">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            {{ rp.ride.ride_date }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ rp.ride.ride_time|time:"H:i" }}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-500 mb-2">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        Driver: {{ rp.ride.creator.email }}
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-600 bg-white rounded px-2 py-1">
+                                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        Pickup: {{ rp.pickup_point }}
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'ride_detail' rp.ride.id %}" 
+                                       class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow hover:shadow-md">
+                                        View
+                                    </a>
+                                    <form method="POST" action="{% url 'cancel_ride' rp.ride.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow hover:shadow-md">
+                                            Leave
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <p class="text-gray-500">No joined rides yet.</p>
+                    <a href="{% url 'rides_list' %}" class="inline-block mt-3 text-purple-600 hover:text-purple-700 font-medium">Find rides →</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- CO₂ Impact Table -->
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+    <div class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-500 px-6 py-4">
+        <h5 class="text-xl font-bold text-white flex items-center">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            CO₂ Impact per Ride
+        </h5>
+    </div>
+    <div class="p-6">
+        {% if ride_summaries %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Role</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Route</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Vehicle</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-700">Solo (kg)</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-700">Shared (kg)</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-700">Saved (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for item in ride_summaries %}
+                            <tr class="hover:bg-green-50 transition-colors duration-150">
+                                <td class="py-3 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if item.role == 'Driver' %}bg-blue-100 text-blue-800{% else %}bg-purple-100 text-purple-800{% endif %}">
+                                        {{ item.role }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-gray-800 font-medium">{{ item.ride.from_location }} → {{ item.ride.to_location }}</td>
+                                <td class="py-3 px-4 text-gray-600">{% if item.ride.vehicle_type == 'car_petrol' %}Car (petrol){% else %}Bike{% endif %}</td>
+                                <td class="py-3 px-4 text-right text-gray-600">{{ item.solo|floatformat:2 }}</td>
+                                <td class="py-3 px-4 text-right text-gray-600">{{ item.shared|floatformat:2 }}</td>
+                                <td class="py-3 px-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg bg-green-100 text-green-700 font-bold">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                        </svg>
+                                        {{ item.saved|floatformat:2 }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p class="text-gray-500">Take or create a ride to see savings.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

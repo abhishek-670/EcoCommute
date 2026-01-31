@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCommute - Share Rides, Save Planet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-green-50 to-blue-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-leaf text-green-600 text-2xl mr-2"></i>
+                    <span class="text-2xl font-bold text-green-600">EcoCommute</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{% url 'login' %}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md font-medium transition">Login</a>
+                    <a href="{% url 'register' %}" class="bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 transition">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Share Rides, <span class="text-green-600">Save the Planet</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Join thousands of commuters reducing their carbon footprint while saving money. 
+                    Find or offer rides in your community today.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="{% url 'register' %}" class="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition shadow-lg">
+                        <i class="fas fa-car mr-2"></i>Start Carpooling
+                    </a>
+                    <a href="{% url 'rides_list' %}" class="bg-white text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition shadow-lg border-2 border-green-600">
+                        <i class="fas fa-search mr-2"></i>Find a Ride
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+                <div class="bg-white rounded-xl shadow-lg p-8 text-center transform hover:scale-105 transition">
+                    <div class="text-green-600 text-4xl mb-4">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">10,000+</h3>
+                    <p class="text-gray-600">Active Commuters</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8 text-center transform hover:scale-105 transition">
+                    <div class="text-green-600 text-4xl mb-4">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">500 tons</h3>
+                    <p class="text-gray-600">CO₂ Saved Monthly</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8 text-center transform hover:scale-105 transition">
+                    <div class="text-green-600 text-4xl mb-4">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">50,000+</h3>
+                    <p class="text-gray-600">Rides Completed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-4">Why Choose EcoCommute?</h2>
+            <p class="text-center text-gray-600 mb-16 text-lg">Simple, safe, and sustainable commuting</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-dollar-sign text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Save Money</h3>
+                    <p class="text-gray-600">Split fuel costs and reduce your daily commute expenses</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Safe & Secure</h3>
+                    <p class="text-gray-600">Verified users and ID proof for your peace of mind</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tree text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Eco-Friendly</h3>
+                    <p class="text-gray-600">Track your CO₂ savings and help the environment</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-friends text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Build Community</h3>
+                    <p class="text-gray-600">Meet new people and make your commute more social</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-4">How It Works</h2>
+            <p class="text-center text-gray-600 mb-16 text-lg">Get started in 3 simple steps</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="relative">
+                    <div class="bg-white rounded-xl shadow-lg p-8">
+                        <div class="absolute -top-6 left-8 bg-green-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold">
+                            1
+                        </div>
+                        <div class="mt-6">
+                            <i class="fas fa-user-plus text-green-600 text-3xl mb-4"></i>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3">Sign Up</h3>
+                            <p class="text-gray-600">Create your account in minutes with email and ID verification</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="bg-white rounded-xl shadow-lg p-8">
+                        <div class="absolute -top-6 left-8 bg-green-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold">
+                            2
+                        </div>
+                        <div class="mt-6">
+                            <i class="fas fa-search text-green-600 text-3xl mb-4"></i>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3">Find or Offer Rides</h3>
+                            <p class="text-gray-600">Search for rides along your route or create your own ride offer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="bg-white rounded-xl shadow-lg p-8">
+                        <div class="absolute -top-6 left-8 bg-green-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold">
+                            3
+                        </div>
+                        <div class="mt-6">
+                            <i class="fas fa-car-side text-green-600 text-3xl mb-4"></i>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3">Start Carpooling</h3>
+                            <p class="text-gray-600">Join rides, share costs, and track your environmental impact</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-green-600 to-blue-600">
+        <div class="max-w-4xl mx-auto text-center px-4">
+            <h2 class="text-4xl font-bold text-white mb-6">Ready to Make a Difference?</h2>
+            <p class="text-xl text-white mb-8 opacity-90">
+                Join EcoCommute today and be part of the sustainable commuting revolution
+            </p>
+            <a href="{% url 'register' %}" class="bg-white text-green-600 px-10 py-4 rounded-lg text-xl font-semibold hover:bg-gray-100 transition shadow-xl inline-block">
+                Get Started Free <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-leaf text-green-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">EcoCommute</span>
+                    </div>
+                    <p class="text-gray-400">Making commuting sustainable, one ride at a time.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'landing' %}" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="{% url 'rides_list' %}" class="text-gray-400 hover:text-white">Find Rides</a></li>
+                        <li><a href="{% url 'register' %}" class="text-gray-400 hover:text-white">Sign Up</a></li>
+                        <li><a href="{% url 'login' %}" class="text-gray-400 hover:text-white">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">About</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">How It Works</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Safety</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2026 EcoCommute. All rights reserved. Making the world greener, one ride at a time.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
