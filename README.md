@@ -1,5 +1,8 @@
 <<<<<<< HEAD
-# EcoCommute (Flask + SQLite)
+# EcoCommute (Django
+
+
++ SQLite)
 
 A beginner-friendly carpool app that tracks CO₂ savings from shared rides.
 
