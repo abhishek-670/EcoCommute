@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EcoCommute (Flask + SQLite)
 
 A beginner-friendly carpool app that tracks CO₂ savings from shared rides.
@@ -65,3 +66,7 @@ Demo logins (after seeding):
 - Seats include the driver seat. Available seats start at `total_seats - 1`.
 - Joining a ride decreases `seats_available` by one and prevents double joins.
 - Eco badge appears when your total saved CO₂ exceeds 5 kg.
+=======
+# EcoCommute
+EcoCommute - smarter rides for a greener planet
+>>>>>>> bec6b1c9924a0348ff9db1494e9d7762ba541a8a
