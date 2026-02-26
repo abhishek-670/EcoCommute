@@ -164,3 +164,15 @@ AADHAAR_USE_MOCK = os.environ.get('AADHAAR_USE_MOCK', 'True') == 'True'
 # - All API calls are made server-side only (HTTPS)
 # - User consent is mandatory before verification
 # - Complies with Aadhaar Act 2016 & DPDP Act 2023
+
+# ============================================================================
+# LOCATION IQ API SETTINGS
+# ============================================================================
+# LocationIQ provides location autocomplete and geocoding services
+# Get your free API key from: https://locationiq.com/
+
+LOCATIONIQ_API_KEY = os.environ.get('LOCATIONIQ_API_KEY', '')
+
+# LocationIQ Autocomplete Parameters
+LOCATIONIQ_AUTOCOMPLETE_LIMIT = 5  # Max number of suggestions
+LOCATIONIQ_AUTOCOMPLETE_COUNTRIES = 'IN'  # Limit to India

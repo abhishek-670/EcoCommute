@@ -274,7 +274,11 @@ def create_ride(request):
         messages.success(request, 'Ride created.')
         return redirect('rides_list')
     
-    return render(request, 'rides/create_ride.html')
+    from django.conf import settings
+    context = {
+        'locationiq_key': settings.LOCATIONIQ_API_KEY,
+    }
+    return render(request, 'rides/create_ride.html', context)
 
 
 @login_required

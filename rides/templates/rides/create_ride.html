@@ -24,9 +24,16 @@
                             From Location
                         </span>
                     </label>
-                    <input type="text" id="from_location" name="from_location" required 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                           placeholder="e.g., New York City">
+                    <div class="relative">
+                        <input type="text" id="from_location" name="from_location" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="e.g., New York City" autocomplete="off">
+                        <div id="from_location_dropdown" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
+                    </div>
+                    <input type="hidden" id="start_lat" name="start_lat">
+                    <input type="hidden" id="start_lng" name="start_lng">
+                    <p class="text-xs text-gray-500 mt-1">📍 Starting point of your ride</p>
+                    <p class="text-xs text-red-500 mt-1 hidden" id="from_location_error">Please select a location from suggestions</p>
                 </div>
                 <div>
                     <label for="to_location" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -37,9 +44,16 @@
                             To Location
                         </span>
                     </label>
-                    <input type="text" id="to_location" name="to_location" required 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                           placeholder="e.g., Boston">
+                    <div class="relative">
+                        <input type="text" id="to_location" name="to_location" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="e.g., Boston" autocomplete="off">
+                        <div id="to_location_dropdown" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 hidden z-10 max-h-48 overflow-y-auto"></div>
+                    </div>
+                    <input type="hidden" id="end_lat" name="end_lat">
+                    <input type="hidden" id="end_lng" name="end_lng">
+                    <p class="text-xs text-gray-500 mt-1">🎯 Where are passengers going?</p>
+                    <p class="text-xs text-red-500 mt-1 hidden" id="to_location_error">Please select a location from suggestions</p>
                 </div>
                 <div>
                     <label for="ride_date" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -78,7 +92,14 @@
                     <select id="vehicle_type" name="vehicle_type" 
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
                         <option value="car_petrol">Car (Petrol)</option>
+                        <option value="car_diesel">Car (Diesel)</option>
+                        <option value="car_cng">Car (CNG)</option>
+                        <option value="car_hybrid">Car (Hybrid)</option>
+                        <option value="car_electric">Car (Electric)</option>
+                        <option value="motorbike">Motorbike</option>
                         <option value="bike">Bike</option>
+                        <option value="ebike">E-Bike</option>
+                    </select>
                     </select>
                 </div>
                 <div>
@@ -145,4 +166,227 @@
         </div>
     </div>
 </div>
+
+<script>
+// LocationIQ Autocomplete Configuration
+const LOCATIONIQ_API_KEY = '{{ locationiq_key }}';
+const LOCATIONIQ_API_URL = 'https://api.locationiq.com/v1/autocomplete';
+const DEBOUNCE_DELAY = 400;  // 400ms debounce
+
+// Debounce timer
+let fromLocationDebounceTimer;
+let toLocationDebounceTimer;
+
+// Track if location was selected from suggestions (to prevent raw text submission)
+let fromLocationSelected = false;
+let toLocationSelected = false;
+
+/**
+ * Fetch location suggestions from LocationIQ API
+ */
+async function fetchLocationSuggestions(query, fieldId) {
+    if (!query || query.length < 2) {
+        document.getElementById(`${fieldId}_dropdown`).classList.add('hidden');
+        return;
+    }
+
+    try {
+        const params = new URLSearchParams({
+            key: LOCATIONIQ_API_KEY,
+            q: query,
+            format: 'json',
+            countrycodes: 'IN',
+            limit: 5
+        });
+
+        const response = await fetch(`${LOCATIONIQ_API_URL}?${params}`);
+        
+        if (!response.ok) {
+            console.error('LocationIQ API error:', response.status);
+            return;
+        }
+
+        const results = await response.json();
+        displaySuggestions(results, fieldId);
+    } catch (error) {
+        console.error('Error fetching location suggestions:', error);
+    }
+}
+
+/**
+ * Display suggestions in dropdown
+ */
+function displaySuggestions(results, fieldId) {
+    const dropdown = document.getElementById(`${fieldId}_dropdown`);
+    const input = document.getElementById(fieldId);
+    
+    if (!results || results.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+    }
+
+    // Clear previous suggestions
+    dropdown.innerHTML = '';
+    
+    // Add suggestions to dropdown
+    results.forEach((result) => {
+        const suggestionEl = document.createElement('div');
+        suggestionEl.className = 'px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors';
+        suggestionEl.innerHTML = `<span class="text-sm text-gray-700">${escapeHtml(result.display_name)}</span>`;
+        
+        suggestionEl.addEventListener('click', () => {
+            selectLocation(result, fieldId);
+        });
+        
+        dropdown.appendChild(suggestionEl);
+    });
+
+    // Show dropdown
+    dropdown.classList.remove('hidden');
+}
+
+/**
+ * Handle location selection from dropdown
+ */
+function selectLocation(location, fieldId) {
+    const input = document.getElementById(fieldId);
+    const dropdown = document.getElementById(`${fieldId}_dropdown`);
+    const latField = fieldId === 'from_location' ? 'start_lat' : 'end_lat';
+    const lngField = fieldId === 'from_location' ? 'start_lng' : 'end_lng';
+    const errorEl = fieldId === 'from_location' ? 'from_location_error' : 'to_location_error';
+
+    // Fill input field with display_name
+    input.value = location.display_name;
+    
+    // Store coordinates in hidden fields
+    document.getElementById(latField).value = location.lat;
+    document.getElementById(lngField).value = location.lon;
+    
+    // Mark as selected
+    if (fieldId === 'from_location') {
+        fromLocationSelected = true;
+    } else {
+        toLocationSelected = true;
+    }
+    
+    // Hide error message
+    document.getElementById(errorEl).classList.add('hidden');
+    
+    // Hide dropdown
+    dropdown.classList.add('hidden');
+    
+    // Remove focus to prevent re-opening dropdown
+    input.blur();
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
+ * Clear location selection
+ */
+function clearLocationSelection(fieldId) {
+    const input = document.getElementById(fieldId);
+    const dropdown = document.getElementById(`${fieldId}_dropdown`);
+    const latField = fieldId === 'from_location' ? 'start_lat' : 'end_lat';
+    const lngField = fieldId === 'from_location' ? 'start_lng' : 'end_lng';
+
+    // Clear hidden fields
+    document.getElementById(latField).value = '';
+    document.getElementById(lngField).value = '';
+    
+    // Mark as not selected
+    if (fieldId === 'from_location') {
+        fromLocationSelected = false;
+    } else {
+        toLocationSelected = false;
+    }
+}
+
+// Event listeners for autocomplete
+document.getElementById('from_location').addEventListener('input', function(e) {
+    clearLocationSelection('from_location');
+    
+    // Clear previous debounce timer
+    clearTimeout(fromLocationDebounceTimer);
+    
+    // Set new debounce timer
+    fromLocationDebounceTimer = setTimeout(() => {
+        fetchLocationSuggestions(this.value, 'from_location');
+    }, DEBOUNCE_DELAY);
+});
+
+document.getElementById('to_location').addEventListener('input', function(e) {
+    clearLocationSelection('to_location');
+    
+    // Clear previous debounce timer
+    clearTimeout(toLocationDebounceTimer);
+    
+    // Set new debounce timer
+    toLocationDebounceTimer = setTimeout(() => {
+        fetchLocationSuggestions(this.value, 'to_location');
+    }, DEBOUNCE_DELAY);
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    const fromInput = document.getElementById('from_location');
+    const toInput = document.getElementById('to_location');
+    const fromDropdown = document.getElementById('from_location_dropdown');
+    const toDropdown = document.getElementById('to_location_dropdown');
+    
+    if (!fromInput.contains(e.target) && !fromDropdown.contains(e.target)) {
+        fromDropdown.classList.add('hidden');
+    }
+    
+    if (!toInput.contains(e.target) && !toDropdown.contains(e.target)) {
+        toDropdown.classList.add('hidden');
+    }
+});
+
+// Focus handlers to show/hide dropdowns
+document.getElementById('from_location').addEventListener('focus', function() {
+    if (this.value && this.value.length >= 2) {
+        document.getElementById('from_location_dropdown').classList.remove('hidden');
+    }
+});
+
+document.getElementById('to_location').addEventListener('focus', function() {
+    if (this.value && this.value.length >= 2) {
+        document.getElementById('to_location_dropdown').classList.remove('hidden');
+    }
+});
+
+// Form submission validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const startLat = document.getElementById('start_lat').value;
+    const startLng = document.getElementById('start_lng').value;
+    const endLat = document.getElementById('end_lat').value;
+    const endLng = document.getElementById('end_lng').value;
+    
+    // Check if coordinates are populated
+    if (!startLat || !startLng) {
+        e.preventDefault();
+        document.getElementById('from_location_error').classList.remove('hidden');
+        document.getElementById('from_location').focus();
+        return false;
+    }
+    
+    if (!endLat || !endLng) {
+        e.preventDefault();
+        document.getElementById('to_location_error').classList.remove('hidden');
+        document.getElementById('to_location').focus();
+        return false;
+    }
+    
+    // Allow form submission
+    return true;
+});
+</script>
 {% endblock %}

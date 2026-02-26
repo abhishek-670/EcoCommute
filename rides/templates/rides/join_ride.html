@@ -83,7 +83,7 @@
                            required
                            placeholder="Enter your pickup location (e.g., Main Street Corner, Metro Station)"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                    <p class="mt-2 text-sm text-gray-500">Where should the driver pick you up?</p>
+                    <p class="mt-2 text-sm text-gray-500">📍 Be specific so the driver can easily find you (e.g., "Grand Central Terminal, exit 3" or "Next to the green park bench")</p>
                 </div>
 
                 <div>
@@ -95,19 +95,20 @@
                               rows="3"
                               placeholder="Add any landmarks, timing preferences, or special instructions"
                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"></textarea>
-                    <p class="mt-2 text-sm text-gray-500">E.g., "Near the coffee shop", "I'll be ready by 8:00 AM", etc.</p>
+                    <p class="mt-2 text-sm text-gray-500">💡 Examples: "I'll wear a red jacket", "Please arrive 5 minutes early", "Call me when you arrive"</p>
                 </div>
 
-                <div class="flex space-x-4 pt-4">
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
                     <button type="submit" 
-                            class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            onclick="return confirm('Do you want to join this ride? You can cancel anytime.');"
+                            class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
                         Confirm Join Ride
                     </button>
                     <a href="{% url 'rides_list' %}" 
-                       class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-all text-center">
+                       class="w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-all text-center">
                         Cancel
                     </a>
                 </div>

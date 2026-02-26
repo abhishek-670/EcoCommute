@@ -199,7 +199,7 @@
                         <div class="space-y-2">
                             {% if ride.ride_status == 'created' %}
                             <!-- Start Ride Button -->
-                            <form method="POST" action="{% url 'driver_start_ride' ride.id %}" class="w-full">
+                            <form method="POST" action="{% url 'driver_start_ride' ride.id %}" class="w-full" onsubmit="return confirm('Start the ride now? Make sure all passengers are on board.');">
                                 {% csrf_token %}
                                 <button type="submit" 
                                         {% if ride.driver_started %}disabled{% endif %}
@@ -213,7 +213,7 @@
                             </form>
                             {% elif ride.ride_status == 'started' %}
                             <!-- End Ride Button -->
-                            <form method="POST" action="{% url 'driver_end_ride' ride.id %}" class="w-full">
+                            <form method="POST" action="{% url 'driver_end_ride' ride.id %}" class="w-full" onsubmit="return confirm('End the ride? All passengers should have reached their destination.');">
                                 {% csrf_token %}
                                 <button type="submit" 
                                         {% if ride.driver_ended %}disabled{% endif %}
@@ -232,7 +232,7 @@
                         <div class="space-y-2">
                             {% if ride.ride_status == 'created' %}
                             <!-- Confirm Start Button -->
-                            <form method="POST" action="{% url 'passenger_confirm_start' ride.id %}" class="w-full">
+                            <form method="POST" action="{% url 'passenger_confirm_start' ride.id %}" class="w-full" onsubmit="return confirm('Are you ready? Confirm that you are on board or will be ready for pickup.');">
                                 {% csrf_token %}
                                 <button type="submit" 
                                         {% if ride.passenger_started %}disabled{% endif %}
@@ -246,7 +246,7 @@
                             </form>
                             {% elif ride.ride_status == 'started' %}
                             <!-- Confirm Arrival Button -->
-                            <form method="POST" action="{% url 'passenger_confirm_arrival' ride.id %}" class="w-full">
+                            <form method="POST" action="{% url 'passenger_confirm_arrival' ride.id %}" class="w-full" onsubmit="return confirm('Have you reached your destination? Please confirm only when you have arrived.');">
                                 {% csrf_token %}
                                 <button type="submit" 
                                         {% if ride.passenger_ended %}disabled{% endif %}
