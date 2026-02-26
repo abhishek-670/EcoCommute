@@ -171,7 +171,7 @@ AADHAAR_USE_MOCK = os.environ.get('AADHAAR_USE_MOCK', 'True') == 'True'
 # LocationIQ provides location autocomplete and geocoding services
 # Get your free API key from: https://locationiq.com/
 
-LOCATIONIQ_API_KEY = os.environ.get('LOCATIONIQ_API_KEY', '')
+LOCATIONIQ_API_KEY = os.environ.get('LOCATIONIQ_API_KEY', 'pk.f18114ddb978b2e21e6a5d8d95faa619')
 
 # LocationIQ Autocomplete Parameters
 LOCATIONIQ_AUTOCOMPLETE_LIMIT = 5  # Max number of suggestions
