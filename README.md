@@ -1,12 +1,9 @@
-<<<<<<< HEAD
+
 # EcoCommute 🚗🌱
-=======
-<<<<<<< HEAD
-# EcoCommute (Django
 
 
-+ SQLite)
->>>>>>> 0eb78a8e30bcca8b9fcddc72cb49c95c3e046ca4
+# EcoCommute (Django+ SQLite)
+
 
 **EcoCommute** - Smarter rides for a greener planet
 
