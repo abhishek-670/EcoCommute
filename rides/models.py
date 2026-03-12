@@ -60,6 +60,17 @@ class UserProfile(models.Model):
         blank=True,
         help_text="When Aadhaar was successfully verified"
     )
+
+    # Email verification fields retained for DB compatibility.
+    email_verified = models.BooleanField(
+        default=False,
+        help_text="Whether email has been verified"
+    )
+    email_verified_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When email was successfully verified"
+    )
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -112,20 +123,16 @@ class UserProfile(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    """Automatically create UserProfile when User is created"""
-    if created:
-        UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Save UserProfile when User is saved"""
-    # Use get_or_create to handle cases where profile doesn't exist
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
-    else:
-        UserProfile.objects.create(user=instance)
+def ensure_user_profile(sender, instance, **kwargs):
+    """Ensure every User has a profile without mutating existing profile data."""
+    UserProfile.objects.get_or_create(
+        user=instance,
+        defaults={
+            'phone_number': '',
+            'id_proof_number': '',
+            'email_verified': False,
+        },
+    )
 
 
 class Ride(models.Model):

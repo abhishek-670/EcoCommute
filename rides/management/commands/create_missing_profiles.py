@@ -35,11 +35,23 @@ class Command(BaseCommand):
         created_count = 0
         for user in users_without_profile:
             try:
-                UserProfile.objects.create(user=user)
-                created_count += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f'✅ Created profile for: {user.email}')
+                profile, created = UserProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'phone_number': '',
+                        'id_proof_number': '',
+                        'email_verified': False,
+                    },
                 )
+                if created:
+                    created_count += 1
+                    self.stdout.write(
+                        self.style.SUCCESS(f'✅ Created profile for: {user.email}')
+                    )
+                else:
+                    self.stdout.write(
+                        self.style.WARNING(f'⚠️ Profile already exists for: {user.email}')
+                    )
             except Exception as e:
                 self.stdout.write(
                     self.style.ERROR(f'❌ Failed to create profile for {user.email}: {e}')
