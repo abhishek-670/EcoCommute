@@ -21,11 +21,11 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     .passenger-card {
-        transition: all 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .passenger-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
     }
     .status-indicator {
         display: inline-block;
@@ -45,8 +45,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+<div class="container mx-auto px-4 py-8" data-animate-section>
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6" data-animate-section>
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-3xl font-bold text-green-600">Live Ride Tracking</h1>
             <a href="{% url 'ride_detail' ride.id %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
@@ -103,7 +103,7 @@
     </div>
 
     <!-- Map Container -->
-    <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="bg-white rounded-lg shadow-md p-6" data-animate-section data-animate-feature>
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-semibold">Live Location Map</h2>
             <div class="flex items-center gap-4">

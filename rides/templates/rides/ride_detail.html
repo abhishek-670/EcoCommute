@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto" data-animate-section>
     <!-- Back Button -->
     <div class="mb-4">
         <a href="{% url 'rides_list' %}"
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Ride Details Card -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6" data-animate-section>
         <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
             <h2 class="text-2xl font-bold text-white flex items-center">
                 <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,7 +296,7 @@
     </div>
 
     <!-- Road Map Visualization (Start → Pickup → Destination) -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6" data-animate-section data-animate-feature>
         <div class="bg-gradient-to-r from-blue-500 to-cyan-600 px-6 py-4">
             <h3 class="text-xl font-bold text-white flex items-center">
                 <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,7 +356,7 @@
 
     <!-- Passengers List -->
     {% if is_creator or has_joined %}
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden" data-animate-section>
         <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
             <h3 class="text-xl font-bold text-white flex items-center">
                 <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,7 +480,6 @@
 </div>
 
 <script>
-<<<<<<< HEAD
     // Route Map with Live Geocoding (Nominatim) + Real Road Routing (OSRM)
     document.addEventListener('DOMContentLoaded', function () {
         // Create map centered on India (default view)
@@ -556,7 +555,7 @@
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
-                        // GeoJSON coordinates are [lng, lat] — flip to [lat, lng] for Leaflet
+                        // GeoJSON coordinates are [lng, lat] and must be flipped for Leaflet
                         return data.routes[0].geometry.coordinates.map(function (c) {
                             return [c[1], c[0]];
                         });
@@ -568,10 +567,12 @@
 
         // Geocode all locations in parallel, then draw the map
         var promises = [geocode(fromLocation), geocode(toLocation)];
-        if (pickupLocation) promises.push(geocode(pickupLocation));
+        if (pickupLocation) {
+            promises.push(geocode(pickupLocation));
+        }
 
         Promise.all(promises).then(function (results) {
-            var startCoords = results[0] || [10.8505, 76.2711]; // Fallback: Kerala centre
+            var startCoords = results[0] || [10.8505, 76.2711]; // Fallback: Kerala center
             var endCoords = results[1] || [12.9716, 77.5946]; // Fallback: Bengaluru
             var pickupCoords = (pickupLocation && results[2]) ? results[2] : null;
 
@@ -594,10 +595,14 @@
             map.fitBounds(L.latLngBounds(allPoints), { padding: [50, 50] });
 
             // Remove loading overlay
-            if (loadingDiv.parentNode) loadingDiv.parentNode.removeChild(loadingDiv);
+            if (loadingDiv.parentNode) {
+                loadingDiv.parentNode.removeChild(loadingDiv);
+            }
 
             // Open start popup after short delay
-            setTimeout(function () { startMarker.openPopup(); }, 400);
+            setTimeout(function () {
+                startMarker.openPopup();
+            }, 400);
 
             // Fetch and draw real road route via OSRM
             fetchRoute(allPoints).then(function (routeLatLngs) {
@@ -610,7 +615,7 @@
                         lineJoin: 'round'
                     }).addTo(map);
                 } else {
-                    // Fallback: straight dashed line if OSRM unavailable
+                    // Fallback: straight dashed line if OSRM is unavailable
                     L.polyline(allPoints, {
                         color: '#10b981',
                         weight: 4,
@@ -625,228 +630,3 @@
 </script>
 
 {% endblock %}
-=======
-// Initialize the map
-document.addEventListener('DOMContentLoaded', function() {
-    // Create map centered on India (default view)
-    var map = L.map('routeMap').setView([20.5937, 78.9629], 5);
-    var routeLayer = null;
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-    }).addTo(map);
-    
-    // Sample coordinates - In a real app, these would be geocoded from location names
-    // For demo purposes, using major Indian cities as examples
-    var locations = {
-        // Common Indian cities coordinates (you can add more)
-        'Kochi': [9.9312, 76.2673],
-        'Cochin': [9.9312, 76.2673],
-        'Ernakulam': [9.9816, 76.2999],
-        'Thiruvananthapuram': [8.5241, 76.9366],
-        'Trivandrum': [8.5241, 76.9366],
-        'Kozhikode': [11.2588, 75.7804],
-        'Calicut': [11.2588, 75.7804],
-        'Thrissur': [10.5276, 76.2144],
-        'Kollam': [8.8932, 76.6141],
-        'Palakkad': [10.7867, 76.6548],
-        'Bangalore': [12.9716, 77.5946],
-        'Bengaluru': [12.9716, 77.5946],
-        'Mumbai': [19.0760, 72.8777],
-        'Delhi': [28.7041, 77.1025],
-        'Chennai': [13.0827, 80.2707],
-        'Hyderabad': [17.3850, 78.4867],
-        'Pune': [18.5204, 73.8567],
-        'Ahmedabad': [23.0225, 72.5714],
-        'Jaipur': [26.9124, 75.7873],
-        'Lucknow': [26.8467, 80.9462],
-        'Chandigarh': [30.7333, 76.7794],
-        'Goa': [15.2993, 74.1240],
-        'Mangalore': [12.9141, 74.8560],
-        'Mysore': [12.2958, 76.6394],
-        'Madurai': [9.9252, 78.1198],
-        'Coimbatore': [11.0168, 76.9558],
-        'Visakhapatnam': [17.6869, 83.2185],
-        'Indore': [22.7196, 75.8577],
-        'Bhopal': [23.2599, 77.4126],
-        'Patna': [25.5941, 85.1376],
-        'Vadodara': [22.3072, 73.1812],
-        'Agra': [27.1767, 78.0081],
-        'Nashik': [19.9975, 73.7898],
-        'Varanasi': [25.3176, 82.9739],
-        'Surat': [21.1702, 72.8311],
-        'Rajkot': [22.3039, 70.8022],
-    };
-    
-    // Get ride locations
-    var fromLocation = "{{ ride.from_location }}".trim();
-    var toLocation = "{{ ride.to_location }}".trim();
-    {% if passengers %}
-    var pickupLocation = "{{ passengers.0.pickup_point }}".trim();
-    {% else %}
-    var pickupLocation = null;
-    {% endif %}
-    
-    // Helper function to find coordinates (case-insensitive, partial match)
-    function getCoordinates(locationName) {
-        locationName = locationName.toLowerCase();
-        
-        // First try exact match
-        for (var key in locations) {
-            if (key.toLowerCase() === locationName) {
-                return locations[key];
-            }
-        }
-        
-        // Then try partial match (if location name contains city name)
-        for (var key in locations) {
-            if (locationName.includes(key.toLowerCase()) || key.toLowerCase().includes(locationName)) {
-                return locations[key];
-            }
-        }
-        
-        return null;
-    }
-    
-    // Get coordinates for each location
-    var startCoords = getCoordinates(fromLocation);
-    var endCoords = getCoordinates(toLocation);
-    var pickupCoords = pickupLocation ? getCoordinates(pickupLocation) : null;
-    
-    // If we couldn't find coordinates, use defaults along a route
-    if (!startCoords) {
-        startCoords = [10.8505, 76.2711]; // Default: Kerala
-    }
-    if (!endCoords) {
-        endCoords = [12.9716, 77.5946]; // Default: Bangalore
-    }
-    if (pickupLocation && !pickupCoords) {
-        // Place pickup point midway between start and end
-        pickupCoords = [
-            (startCoords[0] + endCoords[0]) / 2,
-            (startCoords[1] + endCoords[1]) / 2
-        ];
-    }
-    
-    // Create custom icons
-    var startIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div style="background-color: #10b981; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">A</div>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-    });
-    
-    var pickupIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div style="background-color: #3b82f6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">B</div>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-    });
-    
-    var endIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div style="background-color: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">C</div>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-    });
-    
-    // Add markers
-    var startMarker = L.marker(startCoords, {icon: startIcon}).addTo(map);
-    startMarker.bindPopup('<div class="text-center"><strong class="text-green-600">Start</strong><br/>' + fromLocation + '</div>');
-    
-    var endMarker = L.marker(endCoords, {icon: endIcon}).addTo(map);
-    endMarker.bindPopup('<div class="text-center"><strong class="text-red-600">Destination</strong><br/>' + toLocation + '</div>');
-    
-    // Build route coordinates array
-    var routeCoords = [startCoords];
-    
-    if (pickupCoords) {
-        var pickupMarker = L.marker(pickupCoords, {icon: pickupIcon}).addTo(map);
-        pickupMarker.bindPopup('<div class="text-center"><strong class="text-blue-600">Pickup</strong><br/>' + pickupLocation + '</div>');
-        routeCoords.push(pickupCoords);
-    }
-    
-    routeCoords.push(endCoords);
-
-    function clearRoute() {
-        if (routeLayer) {
-            map.removeLayer(routeLayer);
-            routeLayer = null;
-        }
-    }
-
-    function showRouteError(message) {
-        var routeStatus = document.getElementById('routeStatus');
-        if (!routeStatus) {
-            return;
-        }
-        routeStatus.textContent = message;
-        routeStatus.classList.remove('hidden');
-    }
-
-    function hideRouteError() {
-        var routeStatus = document.getElementById('routeStatus');
-        if (!routeStatus) {
-            return;
-        }
-        routeStatus.textContent = '';
-        routeStatus.classList.add('hidden');
-    }
-
-    async function drawRoadRoute(points) {
-        clearRoute();
-        hideRouteError();
-
-        if (!points || points.length < 2) {
-            return;
-        }
-
-        var osrmCoordinates = points.map(function(point) {
-            return point[1] + ',' + point[0];
-        }).join(';');
-
-        var osrmUrl = 'https://router.project-osrm.org/route/v1/driving/' + osrmCoordinates + '?overview=full&geometries=geojson';
-
-        try {
-            var response = await fetch(osrmUrl);
-            if (!response.ok) {
-                throw new Error('OSRM request failed with status ' + response.status);
-            }
-
-            var data = await response.json();
-            if (!data.routes || !data.routes.length || !data.routes[0].geometry) {
-                throw new Error('No route geometry returned by OSRM');
-            }
-
-            routeLayer = L.geoJSON(data.routes[0].geometry, {
-                style: function() {
-                    return {
-                        color: '#2563eb',
-                        weight: 5,
-                        opacity: 0.9
-                    };
-                }
-            }).addTo(map);
-        } catch (error) {
-            console.error('Unable to draw OSRM route:', error);
-            showRouteError('Road routing is temporarily unavailable. Markers are still shown.');
-        }
-    }
-
-    // Always keep all route markers in view.
-    var bounds = L.latLngBounds(routeCoords);
-    map.fitBounds(bounds, {padding: [50, 50]});
-
-    drawRoadRoute(routeCoords);
-    
-    // Open start marker popup by default
-    setTimeout(function() {
-        startMarker.openPopup();
-    }, 500);
-});
-</script>
-
-{% endblock %}
->>>>>>> 0320956 (anmiation and the map correction)

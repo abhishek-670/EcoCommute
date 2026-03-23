@@ -1,0 +1,196 @@
+/* Lightweight, reusable UI motion utilities */
+:root {
+    --ui-fast: 0.2s;
+    --ui-medium: 0.4s;
+    --ui-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ui-shadow-soft: 0 6px 14px rgba(15, 23, 42, 0.14);
+    --ui-shadow-card: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* 1) Page load: opacity 0->1, translateY(10px->0), 0.4s */
+.ui-page-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.ui-page-enter.ui-page-loaded {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--ui-medium) var(--ui-ease), transform var(--ui-medium) var(--ui-ease);
+}
+
+/* 2) Button hover: lift + subtle shadow via opacity-only pseudo-element */
+.ui-btn-hover {
+    position: relative;
+    transform: translateZ(0);
+    transition: transform var(--ui-fast) ease;
+}
+
+.ui-btn-hover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--ui-shadow-soft);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ui-fast) ease;
+}
+
+.ui-btn-hover:hover {
+    transform: translateY(-2px);
+}
+
+.ui-btn-hover:hover::after {
+    opacity: 1;
+}
+
+/* 3) Card hover: scale + shadow emphasis */
+.ui-card-hover {
+    position: relative;
+    transform: translateZ(0);
+    transition: transform var(--ui-fast) ease;
+}
+
+.ui-card-hover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--ui-shadow-card);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ui-fast) ease;
+}
+
+.ui-card-hover:hover {
+    transform: scale(1.02);
+}
+
+.ui-card-hover:hover::after {
+    opacity: 1;
+}
+
+/* 5) Icon micro-animation */
+.ui-icon-hover {
+    display: inline-block;
+    transform-origin: center;
+    transition: transform var(--ui-fast) ease;
+}
+
+.ui-icon-hover:hover {
+    transform: rotate(4deg);
+}
+
+/* 4) Section scroll reveal */
+.ui-reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--ui-medium) var(--ui-ease), transform var(--ui-medium) var(--ui-ease);
+    will-change: opacity, transform;
+}
+
+.ui-reveal.ui-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 7) Feature/map load animation */
+.ui-feature-load {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--ui-medium) var(--ui-ease), transform var(--ui-medium) var(--ui-ease);
+}
+
+.ui-feature-load.ui-feature-loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---- Dashboard live animations ---- */
+
+/* Fixes the hero gradient-shift referenced inline: animation: gradient 8s ease infinite */
+@keyframes gradient {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating eco-leaf ambient decoration */
+@keyframes float-leaf {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%       { transform: translateY(-18px) rotate(5deg); }
+}
+
+/* Pulsing ring for live/active ride indicator */
+@keyframes live-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+/* Live status dot */
+.live-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: live-ring 1.8s ease-in-out infinite;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Floating leaf decoration element */
+.db-float-leaf {
+    pointer-events: none;
+    animation: float-leaf 5s ease-in-out infinite;
+}
+
+/* Accessibility and low-end device fallback */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .ui-page-enter,
+    .ui-page-enter.ui-page-loaded,
+    .ui-reveal,
+    .ui-reveal.ui-revealed,
+    .ui-feature-load,
+    .ui-feature-load.ui-feature-loaded {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .ui-btn-hover,
+    .ui-card-hover,
+    .ui-icon-hover,
+    .ui-page-enter,
+    .ui-reveal,
+    .ui-feature-load,
+    .ui-btn-hover::after,
+    .ui-card-hover::after {
+        transition: none !important;
+    }
+
+    .ui-btn-hover:hover,
+    .ui-card-hover:hover,
+    .ui-icon-hover:hover {
+        transform: none !important;
+    }
+
+    .ui-btn-hover:hover::after,
+    .ui-card-hover:hover::after {
+        opacity: 0 !important;
+    }
+
+    .live-status-dot,
+    .db-float-leaf {
+        animation: none !important;
+    }
+}

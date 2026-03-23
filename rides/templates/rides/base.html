@@ -30,7 +30,7 @@
     </script>
     {% block head %}{% endblock %}
 </head>
-<body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
+<body class="h-full bg-gradient-to-br from-gray-50 to-gray-100 ui-page-enter">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,7 +83,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-animate-section>
         {% if messages %}
         <div class="mb-6 space-y-3">
             {% for message in messages %}
@@ -114,11 +114,13 @@
         </div>
     </footer>
 
+    <script src="{% static 'js/ui-animations.js' %}" defer></script>
     <script>
         // Mobile menu toggle
         document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
     </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

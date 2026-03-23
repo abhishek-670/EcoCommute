@@ -3,7 +3,7 @@
 
 <!-- Aadhaar Verification Status Banner -->
 {% if not user.profile.aadhaar_verified %}
-<div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg p-6 mb-6 text-white animate-pulse">
+<div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg p-6 mb-6 text-white animate-pulse" data-animate-section>
     <div class="flex items-start justify-between">
         <div class="flex items-start">
             <div class="flex-shrink-0">
@@ -45,7 +45,7 @@
     </div>
 </div>
 {% else %}
-<div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 mb-6 text-white">
+<div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 mb-6 text-white" data-animate-section>
     <div class="flex items-center">
         <svg class="h-6 w-6 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -60,8 +60,18 @@
 {% endif %}
 
 <!-- Enhanced Hero Stats Section with Animation -->
-<div class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-500 rounded-2xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden" style="background-size: 200% 200%; animation: gradient 8s ease infinite;">
+<div class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-500 rounded-2xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden" style="background-size: 200% 200%; animation: gradient 8s ease infinite;" data-animate-section>
     <div class="absolute inset-0 bg-black opacity-10"></div>
+    <!-- Floating eco-leaf decorations -->
+    <div class="absolute bottom-4 left-5 db-float-leaf" style="opacity:0.18;">
+        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 22h3.71c.73-2.36 4.04-7.15 9.47-8.5C16.91 15.37 17 16.7 17 18h2a9 9 0 01-2-10z"/></svg>
+    </div>
+    <div class="absolute bottom-10 left-20 db-float-leaf" style="opacity:0.12; animation-delay:1.6s; animation-duration:6.5s;">
+        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 22h3.71c.73-2.36 4.04-7.15 9.47-8.5C16.91 15.37 17 16.7 17 18h2a9 9 0 01-2-10z"/></svg>
+    </div>
+    <div class="absolute top-6 left-1/3 db-float-leaf" style="opacity:0.10; animation-delay:3s; animation-duration:4.2s;">
+        <svg class="w-14 h-14 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 22h3.71c.73-2.36 4.04-7.15 9.47-8.5C16.91 15.37 17 16.7 17 18h2a9 9 0 01-2-10z"/></svg>
+    </div>
     <div class="absolute -top-10 -right-10 opacity-20">
         <svg class="w-80 h-80" fill="currentColor" viewBox="0 0 20 20" style="animation: pulse 3s ease-in-out infinite;">
             <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/>
@@ -86,7 +96,7 @@
             <div class="text-center md:text-right bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                 <div class="flex flex-col items-center md:items-end">
                     <div class="flex items-baseline gap-2 mb-2">
-                        <span class="text-6xl md:text-7xl font-black tracking-tight">{{ total_saved|floatformat:1 }}</span>
+                        <span class="text-6xl md:text-7xl font-black tracking-tight db-animate-count" data-decimal="1">{{ total_saved|floatformat:1 }}</span>
                         <span class="text-3xl font-bold text-green-200">kg</span>
                     </div>
                     <div class="text-green-100 font-semibold text-sm uppercase tracking-wide mb-3">CO₂ Saved</div>
@@ -107,7 +117,7 @@
 </div>
 
 <!-- Quick Actions Bar -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" data-animate-section>
     <a href="{% url 'create_ride' %}" class="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
         <div class="flex items-center justify-between">
             <div>
@@ -133,7 +143,7 @@
     <div class="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl p-6 shadow-lg">
         <div class="flex items-center justify-between">
             <div>
-                <div class="text-3xl font-bold mb-1">{{ created_rides|length|add:joined_ride_passengers|length }}</div>
+                <div class="text-3xl font-bold mb-1 db-animate-count">{{ created_rides|length|add:joined_ride_passengers|length }}</div>
                 <div class="text-green-100 text-sm">Total Rides</div>
             </div>
             <svg class="w-12 h-12 text-green-200" fill="currentColor" viewBox="0 0 20 20">
@@ -145,7 +155,7 @@
 </div>
 
 <!-- Rides Grid -->
-<div class="grid md:grid-cols-2 gap-6 mb-6">
+<div class="grid md:grid-cols-2 gap-6 mb-6" data-animate-section>
     <!-- Your Rides Card -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
@@ -165,14 +175,25 @@
             {% if created_rides %}
                 <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
                     {% for ride in created_rides %}
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:border-blue-300 transition-all duration-200 hover:shadow-md">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:border-blue-300 transition-all duration-200 hover:shadow-md ride-card-item">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
-                                    <div class="flex items-center text-gray-800 font-semibold mb-2">
+                                    <div class="flex items-center text-gray-800 font-semibold mb-1">
                                         <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
                                         {{ ride.from_location }} → {{ ride.to_location }}
+                                    </div>
+                                    <div class="mb-2">
+                                        {% if ride.ride_status == 'started' %}
+                                        <span class="inline-flex items-center gap-1.5 text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">
+                                            <span class="live-status-dot"></span>Live
+                                        </span>
+                                        {% elif ride.ride_status == 'created' %}
+                                        <span class="text-xs bg-sky-100 text-sky-700 font-medium px-2 py-0.5 rounded-full">Upcoming</span>
+                                        {% else %}
+                                        <span class="text-xs bg-gray-100 text-gray-500 font-medium px-2 py-0.5 rounded-full">✓ Done</span>
+                                        {% endif %}
                                     </div>
                                     <div class="grid grid-cols-3 gap-2 text-sm text-gray-600 mb-2">
                                         <div class="flex items-center">
@@ -245,14 +266,25 @@
             {% if joined_ride_passengers %}
                 <div class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
                     {% for rp in joined_ride_passengers %}
-                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:border-purple-300 transition-all duration-200 hover:shadow-md">
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:border-purple-300 transition-all duration-200 hover:shadow-md ride-card-item">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
-                                    <div class="flex items-center text-gray-800 font-semibold mb-2">
+                                    <div class="flex items-center text-gray-800 font-semibold mb-1">
                                         <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
                                         {{ rp.ride.from_location }} → {{ rp.ride.to_location }}
+                                    </div>
+                                    <div class="mb-2">
+                                        {% if rp.ride.ride_status == 'started' %}
+                                        <span class="inline-flex items-center gap-1.5 text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">
+                                            <span class="live-status-dot"></span>Live
+                                        </span>
+                                        {% elif rp.ride.ride_status == 'created' %}
+                                        <span class="text-xs bg-sky-100 text-sky-700 font-medium px-2 py-0.5 rounded-full">Upcoming</span>
+                                        {% else %}
+                                        <span class="text-xs bg-gray-100 text-gray-500 font-medium px-2 py-0.5 rounded-full">✓ Done</span>
+                                        {% endif %}
                                     </div>
                                     <div class="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-2">
                                         <div class="flex items-center">
@@ -312,7 +344,7 @@
 </div>
 
 <!-- CO₂ Impact Table -->
-<div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl" data-animate-section>
     <div class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-500 px-6 py-4">
         <h5 class="text-xl font-bold text-white flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +369,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         {% for item in ride_summaries %}
-                            <tr class="hover:bg-green-50 transition-colors duration-150">
+                            <tr class="hover:bg-green-50 transition-colors duration-150 ride-card-item">
                                 <td class="py-3 px-4">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                         {% if item.role == 'Driver' %}bg-blue-100 text-blue-800{% else %}bg-purple-100 text-purple-800{% endif %}">
@@ -371,4 +403,70 @@
         {% endif %}
     </div>
 </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---- Animated counter ---- */
+    function animateCount(el, duration) {
+        var raw = el.textContent.trim();
+        var target = parseFloat(raw);
+        if (isNaN(target) || target <= 0) return;
+        var decimals = parseInt(el.dataset.decimal || '0', 10);
+        var start = null;
+        el.textContent = decimals > 0 ? (0).toFixed(decimals) : '0';
+        function step(ts) {
+            if (!start) start = ts;
+            var progress = Math.min((ts - start) / duration, 1);
+            var ease = 1 - Math.pow(1 - progress, 3);
+            var current = ease * target;
+            el.textContent = decimals > 0 ? current.toFixed(decimals) : Math.round(current);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    /* ---- Staggered card entrance ---- */
+    function staggerCards() {
+        var items = document.querySelectorAll('.ride-card-item');
+        items.forEach(function (item, i) {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(10px)';
+            item.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            setTimeout(function () {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 100 + i * 60);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (reduceMotion) return;
+
+        /* Counter: trigger on intersection */
+        var counterEls = document.querySelectorAll('.db-animate-count');
+        if (counterEls.length) {
+            if ('IntersectionObserver' in window) {
+                var obs = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            animateCount(entry.target, 1500);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.4 });
+                counterEls.forEach(function (el) { obs.observe(el); });
+            } else {
+                counterEls.forEach(function (el) { animateCount(el, 1500); });
+            }
+        }
+
+        staggerCards();
+    });
+})();
+</script>
 {% endblock %}
